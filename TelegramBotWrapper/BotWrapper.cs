@@ -12,18 +12,36 @@ namespace TelegramBotWrapper
 {
     public class BotWrapper
     {
-        private readonly TelegramBotClient _bot;
-        private CommandHandler _commandHandler;
+        private TelegramBotClient _bot { get; set; }
+        private CommandHandler _commandHandler { get; set; }
         private BotSettings _settings { get; set; }
         
         public BotWrapper()
         {
-            _settings = BotSettings.Load();
+            LoadSettings();
 
-            _bot = new TelegramBotClient(_settings.ApiToken);
+            InitBot();
 
             InitCommandHandler();
             InitEvents();
+        }
+
+        private void LoadSettings()
+        {
+            bool editSettings = !BotSettings.SettingsExist();
+
+            _settings = BotSettings.Load();
+
+            if (editSettings)
+            {
+                Console.WriteLine("Please edit the settings.json");
+                Environment.Exit(-1);
+            }
+        }
+
+        private void InitBot()
+        {
+            _bot = new TelegramBotClient(_settings.ApiToken);
         }
 
         private void InitCommandHandler()
