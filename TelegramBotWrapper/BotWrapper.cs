@@ -26,6 +26,16 @@ namespace TelegramBotWrapper
             InitEvents();
         }
 
+        public void Start()
+        {
+            _bot.StartReceiving();
+        }
+
+        public void Stop()
+        {
+            _bot.StopReceiving();
+        }
+
         private void LoadSettings()
         {
             bool editSettings = !BotSettings.SettingsExist();
