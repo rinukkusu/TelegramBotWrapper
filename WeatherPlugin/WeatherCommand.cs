@@ -42,7 +42,7 @@ namespace WeatherPlugin
                 WebClient client = new WebClient();
                 try
                 {
-                    jsonbytes = client.DownloadData(ApiUrl + place);
+                    jsonbytes = client.DownloadData(ApiUrl);
                 }
                 catch (Exception ex)
                 {
