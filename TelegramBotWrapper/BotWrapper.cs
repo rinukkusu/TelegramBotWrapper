@@ -57,18 +57,7 @@ namespace TelegramBotWrapper
         private void InitCommandHandler()
         {
             _commandHandler = new CommandHandler(_bot);
-            var typesWithMyAttribute =
-                // Note the AsParallel here, this will parallelize everything after.
-                from a in AppDomain.CurrentDomain.GetAssemblies().AsParallel()
-                from t in a.GetTypes()
-                let attributes = t.GetCustomAttributes(typeof(CommandContainerAttribute), true)
-                where attributes != null && attributes.Length > 0
-                select new { Type = t, Attributes = attributes.Cast<CommandContainerAttribute>() };
-
-            typesWithMyAttribute.ForAll(container =>
-            {
-                _commandHandler.AddCommandContainer(container.Type);
-            });
+            _commandHandler.LoadPlugins();
         }
 
         private void InitEvents()

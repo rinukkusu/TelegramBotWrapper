@@ -3,17 +3,41 @@ using System.Collections.Generic;
 using Telegram.Bot;
 using System.Reflection;
 using System.Linq;
+using System.IO;
 
 namespace TelegramBotWrapper.Commands
 {
     public class CommandHandler
     {
-        private static IDictionary<CommandMethodAttribute, Action<TelegramBotClient, Command>> _commands = new Dictionary<CommandMethodAttribute, Action<TelegramBotClient, Command>>();
+        private static IDictionary<CommandInfoAttribute, ICommandContainer> _commandContainers =  new Dictionary<CommandInfoAttribute, ICommandContainer>();
+
         private TelegramBotClient _bot;
 
         public CommandHandler(TelegramBotClient bot)
         {
             _bot = bot;
+
+            LoadCommandsFromAssembly(Assembly.GetExecutingAssembly());
+        }
+
+        internal void LoadPlugins()
+        {
+            Directory.GetFiles("./", "*Plugin.dll").ToList().ForEach(plugin =>
+            {
+                Assembly pluginAssembly = Assembly.LoadFile(Path.GetFullPath(plugin));
+                LoadCommandsFromAssembly(pluginAssembly);
+            });
+        }
+
+        internal void LoadCommandsFromAssembly(Assembly assembly)
+        {
+            assembly.GetTypes().ToList().ForEach(type =>
+            {
+                if (type.IsSubclassOf(typeof(CommandContainerBase)))
+                {
+                    AddCommandContainer(type);
+                }
+            });
         }
 
         internal CommandHandler AddCommandContainer<T>()
@@ -23,26 +47,17 @@ namespace TelegramBotWrapper.Commands
 
         internal CommandHandler AddCommandContainer(Type type)
         {
-            MethodInfo[] methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public);
+            ICommandContainer commandContainer = type.GetConstructor(new Type[] { typeof(TelegramBotClient) }).Invoke(new object[] { _bot }) as ICommandContainer;
+            CommandInfoAttribute attribute = type.GetCustomAttribute<CommandInfoAttribute>();
 
-            foreach (MethodInfo method in methods)
-            {
-                CommandMethodAttribute attribute = method.GetCustomAttribute<CommandMethodAttribute>();
-                if (attribute != null)
-                {
-                    _commands.Add(attribute, (bot, command) =>
-                    {
-                        method.Invoke(null, new object[] { bot, command });
-                    });
-                }
-            }
+            _commandContainers.Add(attribute, commandContainer);
 
             return this;
         }
 
-        private static KeyValuePair<CommandMethodAttribute, Action<TelegramBotClient, Command>>? FindCommand(string identifier)
+        private static KeyValuePair<CommandInfoAttribute, ICommandContainer>? FindCommand(string identifier)
         {
-            var foundCommand = _commands.FirstOrDefault(c => c.Key.Identifier == identifier);
+            var foundCommand = _commandContainers.FirstOrDefault(c => c.Key.Identifier == identifier);
             if (foundCommand.Key != null)
             {
                 return foundCommand;
@@ -56,16 +71,29 @@ namespace TelegramBotWrapper.Commands
             var foundCommand = FindCommand(command.Identifier);
             if (foundCommand.HasValue)
             {
-                foundCommand.Value.Value.Invoke(_bot, command);
+                try
+                {
+                    bool success = foundCommand.Value.Value.Execute(command);
+                    if (!success)
+                    {
+                        var info = GetCommandInfo(command.Identifier);
+                        string returnText = $"Usage:{Environment.NewLine}*/{info.Usage}* - {info.Description}";
+                        _bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, returnText, false, false, 0, null, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, ex.Message, false, false, 0, null, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+                }
             }
         }
 
-        public static IList<CommandMethodAttribute> ListAllCommands()
+        public static IList<CommandInfoAttribute> ListAllCommands()
         {
-            return _commands.Select(c => c.Key).ToList();
+            return _commandContainers.Select(c => c.Key).ToList();
         }
 
-        public static CommandMethodAttribute GetCommandInfo(string type)
+        public static CommandInfoAttribute GetCommandInfo(string type)
         {
             var foundCommand = FindCommand(type);
             if (foundCommand.HasValue)

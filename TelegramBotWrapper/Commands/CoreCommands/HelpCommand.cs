@@ -7,15 +7,18 @@ using Telegram.Bot;
 
 namespace TelegramBotWrapper.Commands.Containers
 {
-    [CommandContainer]
-    internal class CoreCommands
+    [CommandInfo(
+        "help",
+        Usage = "help [command]",
+        Description = "Lists all commands or shows information about a command."
+    )]
+    internal class HelpCommand : CommandContainerBase
     {
-        [CommandMethod(
-            Identifier = "help",
-            Usage = "help [command]",
-            Description = "Lists all commands or shows information about a command."
-        )]
-        public static void Help(TelegramBotClient bot, Command command)
+        public HelpCommand(TelegramBotClient bot) : base(bot)
+        {
+        }
+        
+        public override bool Execute(Command command)
         {
             string returnText = "";
 
@@ -38,7 +41,9 @@ namespace TelegramBotWrapper.Commands.Containers
                 }
             }
 
-            bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, returnText, false, false, 0, null, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+            _bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, returnText, false, false, 0, null, Telegram.Bot.Types.Enums.ParseMode.Markdown);
+
+            return true;
         }
     }
 }

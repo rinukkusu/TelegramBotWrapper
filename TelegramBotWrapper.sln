@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBotWrapper", "TelegramBotWrapper\TelegramBotWrapper.csproj", "{D8B5C07C-BE17-4481-88CB-6D9D2D3A0AE4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{E58FE872-7DD9-4256-ADE2-BAF82203334E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherPlugin", "WeatherPlugin\WeatherPlugin.csproj", "{6388DB25-D0B4-4AC2-BA35-4602FD455281}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +19,15 @@ Global
 		{D8B5C07C-BE17-4481-88CB-6D9D2D3A0AE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8B5C07C-BE17-4481-88CB-6D9D2D3A0AE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8B5C07C-BE17-4481-88CB-6D9D2D3A0AE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6388DB25-D0B4-4AC2-BA35-4602FD455281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6388DB25-D0B4-4AC2-BA35-4602FD455281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6388DB25-D0B4-4AC2-BA35-4602FD455281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6388DB25-D0B4-4AC2-BA35-4602FD455281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6388DB25-D0B4-4AC2-BA35-4602FD455281} = {E58FE872-7DD9-4256-ADE2-BAF82203334E}
 	EndGlobalSection
 EndGlobal

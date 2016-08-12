@@ -1,23 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\SQLite.Native.3.12.3\build\net45\SQLite.Native.props" Condition="Exists('..\packages\SQLite.Native.3.12.3\build\net45\SQLite.Native.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D8B5C07C-BE17-4481-88CB-6D9D2D3A0AE4}</ProjectGuid>
+    <ProjectGuid>{6388DB25-D0B4-4AC2-BA35-4602FD455281}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TelegramBotWrapper</RootNamespace>
-    <AssemblyName>TelegramBotWrapper</AssemblyName>
+    <RootNamespace>WeatherPlugin</RootNamespace>
+    <AssemblyName>WeatherPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -27,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -35,27 +30,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LimeBean, Version=1.2.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LimeBean.1.2.6\lib\net40\LimeBean.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Data.Sqlite, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Sqlite.1.0.0\lib\net451\Microsoft.Data.Sqlite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
@@ -66,34 +50,29 @@
     <Reference Include="System.Xml" />
     <Reference Include="Telegram.Bot, Version=10.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Telegram.Bot.10.3.1\lib\net45\Telegram.Bot.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BotWrapper.cs" />
-    <Compile Include="Commands\Command.cs" />
-    <Compile Include="Commands\CommandInfoAttribute.cs" />
-    <Compile Include="Commands\CommandContainerBase.cs" />
-    <Compile Include="Commands\CommandHandler.cs" />
-    <Compile Include="Commands\CoreCommands\HelpCommand.cs" />
-    <Compile Include="Commands\ICommandContainer.cs" />
+    <Compile Include="Models\ErrorResponse.cs" />
+    <Compile Include="Models\IResponse.cs" />
+    <Compile Include="Models\WeatherResponse.cs" />
+    <Compile Include="WeatherCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\SettingsBase.cs" />
-    <Compile Include="Settings\BotSettings.cs" />
-    <Compile Include="Settings\SettingsPathAttribute.cs" />
+    <Compile Include="WeatherSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <ProjectReference Include="..\TelegramBotWrapper\TelegramBotWrapper.csproj">
+      <Project>{d8b5c07c-be17-4481-88cb-6d9d2d3a0ae4}</Project>
+      <Name>TelegramBotWrapper</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\SQLite.Native.3.12.3\build\net45\SQLite.Native.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLite.Native.3.12.3\build\net45\SQLite.Native.props'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
