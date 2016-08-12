@@ -22,7 +22,7 @@ namespace WeatherPlugin
         private static string API_URL = "http://api.openweathermap.org/data/2.5/weather?units=metric";
 
         private Dictionary<string, string> _weatherIcons = new Dictionary<string, string>() {
-            { "01d", "☀" }, { "01n", "🌕" },
+            { "01d", "☀" }, { "01n", "🌚" },
             { "02d", "⛅" }, { "02n", "⛅" },
             { "03d", "☁" }, { "03n", "☁" },
             { "04d", "☁" }, { "04n", "☁" },
