@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -19,6 +20,18 @@ namespace WeatherPlugin
     {
         private WeatherSettings _settings;
         private static string API_URL = "http://api.openweathermap.org/data/2.5/weather?units=metric";
+
+        private Dictionary<string, string> _weatherIcons = new Dictionary<string, string>() {
+            { "01d", "☀" }, { "01n", "🌕" },
+            { "02d", "⛅" }, { "02n", "⛅" },
+            { "03d", "☁" }, { "03n", "☁" },
+            { "04d", "☁" }, { "04n", "☁" },
+            { "09d", "🌦" }, { "09n", "🌦" },
+            { "10d", "🌧" }, { "10n", "🌧" },
+            { "11d", "⛈" }, { "11n", "⛈" },
+            { "13d", "🌨" }, { "13n", "🌨" },
+            { "50d", "🌫" }, { "50n", "🌫" },
+        };
 
         public WeatherCommand(TelegramBotClient bot) : base(bot)
         {
@@ -74,14 +87,20 @@ namespace WeatherPlugin
                         returnstring = returnstring.Replace("%PRESSURE%", wResponse.main.pressure.ToString());
 
                         string weatherinfo = String.Empty;
+                        string weatherIcon = String.Empty;
                         foreach (WeatherResponse.Weather info in wResponse.weather)
                         {
                             weatherinfo += info.description + ", ";
+
+                            if (String.IsNullOrWhiteSpace(weatherIcon))
+                            {
+                                _weatherIcons.TryGetValue(info.icon, out weatherIcon);
+                            }
                         }
                         weatherinfo = weatherinfo.Trim(' ');
                         weatherinfo = weatherinfo.Trim(',');
 
-                        returnstring = returnstring.Replace("%WEATHERINFO%", weatherinfo);
+                        returnstring = returnstring.Replace("%WEATHERINFO%", $"{weatherIcon + " "}{weatherinfo}");
                     }
                     else
                     {
@@ -97,7 +116,7 @@ namespace WeatherPlugin
             {
                 return false;
             }
-
+            
             _bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, returnText, false, false, 0, null, Telegram.Bot.Types.Enums.ParseMode.Markdown);
 
             return true;
