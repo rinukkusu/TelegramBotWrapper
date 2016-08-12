@@ -33,9 +33,9 @@ namespace WeatherPlugin
             {
                 string place = command.Arguments.First().Replace(" ", ",");
 
-                string returnstring = $"%CITY% | %TEMP%°C | %WEATHERINFO% | H: %HUMIDITY%%, P: %PRESSURE%hPa";
+                string returnstring = $"*%CITY%* | *%TEMP%°C* | %WEATHERINFO% | H: %HUMIDITY%%, P: %PRESSURE%hPa";
 
-                string ApiUrl = "http://api.openweathermap.org/data/2.5/weather?units=metric&APPID=f2deb5b7695a3f73da3e353c8d4bffd9&q=";
+                string ApiUrl = GetApiUrl(place);
 
                 byte[] jsonbytes = new byte[] { };
 
@@ -105,7 +105,7 @@ namespace WeatherPlugin
 
         private string GetApiUrl(string place)
         {
-            return $"{API_URL}&q={place}&APPID={_settings.ApiToken}";
+            return $"{API_URL}&APPID={_settings.ApiToken}&q={place}";
         }
     }
 }
