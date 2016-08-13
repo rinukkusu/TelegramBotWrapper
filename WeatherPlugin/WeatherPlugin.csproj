@@ -57,6 +57,7 @@
     <Compile Include="Models\ErrorResponse.cs" />
     <Compile Include="Models\IResponse.cs" />
     <Compile Include="Models\WeatherResponse.cs" />
+    <Compile Include="SetCityCommand.cs" />
     <Compile Include="WeatherCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeatherSettings.cs" />

@@ -18,7 +18,7 @@ namespace WeatherPlugin
     )]
     public class WeatherCommand : CommandContainerBase
     {
-        private WeatherSettings _settings;
+        internal static WeatherSettings _settings = WeatherSettings.Load();
         private static string API_URL = "http://api.openweathermap.org/data/2.5/weather?units=metric";
 
         private Dictionary<string, string> _weatherIcons = new Dictionary<string, string>() {
@@ -35,88 +35,95 @@ namespace WeatherPlugin
 
         public WeatherCommand(TelegramBotClient bot) : base(bot)
         {
-            _settings = WeatherSettings.Load();
+        }
+
+        private string GetWeatherString(string place)
+        {
+            string returnstring = $"*%CITY%* | *%TEMP%°C* | %WEATHERINFO% | H: %HUMIDITY%%, P: %PRESSURE%hPa";
+
+            string ApiUrl = GetApiUrl(place);
+
+            byte[] jsonbytes = new byte[] { };
+
+            WebClient client = new WebClient();
+            try
+            {
+                jsonbytes = client.DownloadData(ApiUrl);
+            }
+            catch (Exception ex)
+            {
+                returnstring = ex.Message;
+            }
+
+            string jsonResponse = UTF8Encoding.UTF8.GetString(jsonbytes);
+
+            IResponse response;
+
+            try
+            {
+                response = JsonConvert.DeserializeObject<WeatherResponse>(jsonResponse);
+            }
+            catch
+            {
+                response = JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse);
+            }
+
+            if (response != null)
+            {
+                if (response.cod == 200)
+                {
+                    var wResponse = ((WeatherResponse)response);
+
+                    returnstring = returnstring.Replace("%CITY%", wResponse.name);
+                    returnstring = returnstring.Replace("%TEMP%", wResponse.main.temp.ToString());
+                    returnstring = returnstring.Replace("%HUMIDITY%", wResponse.main.humidity.ToString());
+                    returnstring = returnstring.Replace("%PRESSURE%", wResponse.main.pressure.ToString());
+
+                    string weatherinfo = String.Empty;
+                    string weatherIcon = String.Empty;
+                    foreach (WeatherResponse.Weather info in wResponse.weather)
+                    {
+                        weatherinfo += info.description + ", ";
+
+                        if (String.IsNullOrWhiteSpace(weatherIcon))
+                        {
+                            _weatherIcons.TryGetValue(info.icon, out weatherIcon);
+                        }
+                    }
+                    weatherinfo = weatherinfo.Trim(' ');
+                    weatherinfo = weatherinfo.Trim(',');
+
+                    returnstring = returnstring.Replace("%WEATHERINFO%", $"{weatherIcon + " "}{weatherinfo}");
+                }
+                else
+                {
+                    response = JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse);
+                    returnstring = ((ErrorResponse)response).message;
+                }
+            }
+
+            return returnstring;
         }
         
         public override bool Execute(Command command)
         {
             string returnText = "";
+            string place = "";
 
             if (command.Arguments.Any())
             {
-                string place = command.Arguments.First().Replace(" ", ",");
-
-                string returnstring = $"*%CITY%* | *%TEMP%°C* | %WEATHERINFO% | H: %HUMIDITY%%, P: %PRESSURE%hPa";
-
-                string ApiUrl = GetApiUrl(place);
-
-                byte[] jsonbytes = new byte[] { };
-
-                WebClient client = new WebClient();
-                try
-                {
-                    jsonbytes = client.DownloadData(ApiUrl);
-                }
-                catch (Exception ex)
-                {
-                    returnText = ex.Message;
-                }
-
-                string jsonResponse = UTF8Encoding.UTF8.GetString(jsonbytes);
-
-                IResponse response;
-
-                try
-                {
-                    response = JsonConvert.DeserializeObject<WeatherResponse>(jsonResponse);
-                }
-                catch
-                {
-                    response = JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse);
-                }
-
-                if (response != null)
-                {
-                    if (response.cod == 200)
-                    {
-                        var wResponse = ((WeatherResponse)response);
-
-                        returnstring = returnstring.Replace("%CITY%", wResponse.name);
-                        returnstring = returnstring.Replace("%TEMP%", wResponse.main.temp.ToString());
-                        returnstring = returnstring.Replace("%HUMIDITY%", wResponse.main.humidity.ToString());
-                        returnstring = returnstring.Replace("%PRESSURE%", wResponse.main.pressure.ToString());
-
-                        string weatherinfo = String.Empty;
-                        string weatherIcon = String.Empty;
-                        foreach (WeatherResponse.Weather info in wResponse.weather)
-                        {
-                            weatherinfo += info.description + ", ";
-
-                            if (String.IsNullOrWhiteSpace(weatherIcon))
-                            {
-                                _weatherIcons.TryGetValue(info.icon, out weatherIcon);
-                            }
-                        }
-                        weatherinfo = weatherinfo.Trim(' ');
-                        weatherinfo = weatherinfo.Trim(',');
-
-                        returnstring = returnstring.Replace("%WEATHERINFO%", $"{weatherIcon + " "}{weatherinfo}");
-                    }
-                    else
-                    {
-                        response = JsonConvert.DeserializeObject<ErrorResponse>(jsonResponse);
-                        returnstring = ((ErrorResponse)response).message;
-                    }
-
-                    returnText = returnstring;
-                }
-
+                place = command.Arguments.First().Replace(" ", ",");
             }
             else
             {
-                return false;
+                place = _settings.GetPlaceForUser(command.Sender.Id);
+                if (String.IsNullOrWhiteSpace(place))
+                {
+                    return false;
+                }
             }
-            
+
+            returnText = GetWeatherString(place);
             _bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, returnText, false, false, 0, null, Telegram.Bot.Types.Enums.ParseMode.Markdown);
 
             return true;
