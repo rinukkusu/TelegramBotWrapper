@@ -1,9 +1,3 @@
-[submodule "lib/telegram.bot"]
-	path = lib/telegram.bot
-	url = https://github.com/MrRoundRobin/telegram.bot
-[submodule "lib/LimeBeanEnhancements"]
-	path = lib/LimeBeanEnhancements
-	url = https://github.com/rinukkusu/LimeBeanEnhancements/
-[submodule "lib/LimeBean"]
-	path = lib/LimeBean
-	url = https://github.com/Nick-Lucas/LimeBean
+[submodule "LimeBeanEnhancements"]
+	path = LimeBeanEnhancements
+	url = https://github.com/rinukkusu/LimeBeanEnhancements

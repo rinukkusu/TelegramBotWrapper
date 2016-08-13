@@ -37,10 +37,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -48,10 +44,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Telegram.Bot, Version=10.3.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Telegram.Bot.10.3.1\lib\net45\Telegram.Bot.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\ErrorResponse.cs" />
@@ -63,6 +55,10 @@
     <Compile Include="WeatherSettings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\lib\telegram.bot\src\Telegram.Bot\Telegram.Bot.xproj">
+      <Project>{42e7cd69-9c5f-4a63-9341-e8c98c7cb8af}</Project>
+      <Name>Telegram.Bot</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TelegramBotWrapper\TelegramBotWrapper.csproj">
       <Project>{d8b5c07c-be17-4481-88cb-6d9d2d3a0ae4}</Project>
       <Name>TelegramBotWrapper</Name>
