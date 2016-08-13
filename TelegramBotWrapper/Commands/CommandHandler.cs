@@ -18,6 +18,7 @@ namespace TelegramBotWrapper.Commands
             _bot = bot;
 
             LoadCommandsFromAssembly(Assembly.GetExecutingAssembly());
+            LoadCommandsFromAssembly(Assembly.GetEntryAssembly());
         }
 
         internal void LoadPlugins()
@@ -35,7 +36,11 @@ namespace TelegramBotWrapper.Commands
             {
                 if (type.IsSubclassOf(typeof(CommandContainerBase)))
                 {
-                    AddCommandContainer(type);
+                    try
+                    {
+                        AddCommandContainer(type);
+                    }
+                    catch { }
                 }
             });
         }
