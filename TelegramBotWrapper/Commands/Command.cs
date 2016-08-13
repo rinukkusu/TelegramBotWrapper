@@ -10,7 +10,7 @@ namespace TelegramBotWrapper.Commands
     public class Command
     {
         private static readonly string COMMAND_CHARACTER = "/";
-        private static readonly Regex _commandRegex = new Regex(@"^/(?<command>.+?)\s(?<arguments>.*)$|^/(?<command_wo>.+?)$");
+        private static readonly Regex _commandRegex = new Regex(@"^/(?<command>.+?)(@.+)?\s(?<arguments>.*)$|^/(?<command_wo>.+?)(@.+)?$");
 
         public string Identifier { get; private set; }
         public User Sender { get; private set; }
