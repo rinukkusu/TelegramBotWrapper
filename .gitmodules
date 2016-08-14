@@ -1,0 +1,3 @@
+[submodule "libs/LimeBeanEnhancements"]
+	path = libs/LimeBeanEnhancements
+	url = https://github.com/rinukkusu/LimeBeanEnhancements
