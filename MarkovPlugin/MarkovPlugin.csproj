@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BibleCommand.cs" />
+    <Compile Include="BibleTTSCommand.cs" />
     <Compile Include="MarkovCommand.cs" />
     <Compile Include="Models\MarkovPart.cs" />
     <Compile Include="Models\MarkovPartRepository.cs" />
@@ -81,6 +82,10 @@
       <Project>{d8b5c07c-be17-4481-88cb-6d9d2d3a0ae4}</Project>
       <Name>TelegramBotWrapper</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\TextToSpeechPlugin\TextToSpeechPlugin.csproj">
+      <Project>{1d484311-d244-41cf-9063-824e3132d1a6}</Project>
+      <Name>TextToSpeechPlugin</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

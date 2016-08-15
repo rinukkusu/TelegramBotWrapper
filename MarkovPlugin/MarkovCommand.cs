@@ -14,7 +14,7 @@ namespace MarkovPlugin
 {
     [CommandInfo("m",
         Description = "Markovgenerator",
-        Usage = "m <word>"
+        Usage = "m <word1> [<word2>]"
     )]
     public class MarkovCommand : CommandContainerBase
     {
@@ -47,7 +47,7 @@ namespace MarkovPlugin
             {
                 try
                 {
-                    returnText = _markovPartRepository.GetSentence(command.Arguments.First());
+                    returnText = _markovPartRepository.GetSentence(command.Arguments.First(), command.Arguments.Count > 1 ? command.Arguments[1] : null);
                 }
                 catch (Exception ex)
                 {

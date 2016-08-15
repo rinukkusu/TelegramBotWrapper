@@ -4,6 +4,7 @@ using MarkovPlugin.Models;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,21 +13,14 @@ using TelegramBotWrapper.Commands;
 
 namespace MarkovPlugin
 {
-    [CommandInfo("b",
-        Description = "Edle Bibelverse für Franz und Hans",
-        Usage = "b <word>"
+    [CommandInfo("bsay",
+        Description = "Bibelverse, vorgelesen.",
+        Usage = "bsay <word>"
     )]
-    public class BibleCommand : CommandContainerBase
+    public class BibleTTSCommand : CommandContainerBase
     {
-        internal static MarkovPartRepository _markovPartRepository;
-        private readonly IBeanAPI _beanApi;
-
-        public BibleCommand(TelegramBotClient bot) : base(bot)
+        public BibleTTSCommand(TelegramBotClient bot) : base(bot)
         {
-            _beanApi = new BeanApi("data source=./bibel.db", typeof(SqliteConnection));
-            _beanApi.EnterFluidMode();
-
-            _markovPartRepository = new MarkovPartRepository(_beanApi);
         }
 
         public override bool Execute(Command command)
@@ -37,7 +31,20 @@ namespace MarkovPlugin
             {
                 try
                 {
-                    returnText = _markovPartRepository.GetSentence(command.Arguments.First());
+                    returnText = BibleCommand._markovPartRepository.GetSentence(command.Arguments.First());
+                    byte[] speechBytes  = TextToSpeechPlugin.TextToSpeech.GetSpeechFromText(returnText);
+
+                    if (speechBytes != null)
+                    {
+                        MemoryStream stream = new MemoryStream(speechBytes);
+                        _bot.SendVoiceAsync(command.OriginalMessage.Chat.Id, new Telegram.Bot.Types.FileToSend("audio.wav", stream));
+                    }
+                    else
+                    {
+                        _bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, "Error: Something went wrong ...");
+                    }
+
+                    return true;
                 }
                 catch (Exception ex)
                 {

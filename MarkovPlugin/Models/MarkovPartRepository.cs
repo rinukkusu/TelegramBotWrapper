@@ -113,17 +113,34 @@ namespace MarkovPlugin.Models
             Save(part);
         }
 
-        public string GetSentence(string startWord)
+        public string GetSentence(string startWord, string word2 = null)
         {
             string returnText = String.Empty;
 
             Word word = GetWord(startWord);
+            Word wordAfter = GetWord(word2);
 
             if (word != null)
             {
-                MarkovPart startPart = GetNextPart(0, word.Id);
+                MarkovPart startPart;
+
+                if (wordAfter != null)
+                {
+                    startPart = GetNextPart(word.Id, wordAfter.Id);
+                }
+                else
+                {
+                    // only get markov for one word
+                    startPart = GetNextPart(0, word.Id);
+                }
+
                 if (startPart != null)
                 {
+                    if (startPart.WordBefore != null)
+                    {
+                        returnText += startPart.WordBefore.Value + " ";
+                    }
+
                     returnText += startPart.Word.Value + " ";
 
                     MarkovPart part = startPart;
