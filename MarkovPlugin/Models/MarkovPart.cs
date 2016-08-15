@@ -9,7 +9,7 @@ using LimeBeanEnhancements;
 namespace MarkovPlugin.Models
 {
     [BeanTable("markovpart")]
-    class MarkovPart : EnhancedBean<MarkovPart>
+    public class MarkovPart : EnhancedBean<MarkovPart>
     {
         [BeanProperty("word_before")]
         [BeanRelation(typeof(Word))]

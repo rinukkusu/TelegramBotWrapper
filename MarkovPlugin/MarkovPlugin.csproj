@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BibleCommand.cs" />
     <Compile Include="MarkovCommand.cs" />
     <Compile Include="Models\MarkovPart.cs" />
     <Compile Include="Models\MarkovPartRepository.cs" />

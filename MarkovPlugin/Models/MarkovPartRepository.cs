@@ -8,7 +8,7 @@ using LimeBean.Interfaces;
 
 namespace MarkovPlugin.Models
 {
-    class MarkovPartRepository : BeanRepository<MarkovPart>
+    public class MarkovPartRepository : BeanRepository<MarkovPart>
     {
         public MarkovPartRepository(IBeanAPI beanApi) : base(beanApi)
         {
@@ -58,7 +58,7 @@ namespace MarkovPlugin.Models
             return returnWord;
         }
 
-        internal void AddSentence(string text)
+        public void AddSentence(string text)
         {
             try
             {
@@ -153,11 +153,11 @@ namespace MarkovPlugin.Models
 
         private MarkovPart GetNextPart(long wordBeforeId, long wordId)
         {
-            var row = _beanApi.Row(false, "SELECT id FROM (SELECT * FROM `markovpart` WHERE `word_before`= {0} AND `word`= {1} ORDER BY `count` DESC LIMIT 5) AS part ORDER BY RANDOM() LIMIT 1;", wordBeforeId, wordId);
+            var row = _beanApi.Rows(false, "SELECT id FROM (SELECT * FROM `markovpart` WHERE `word_before`= {0} AND `word`= {1} ORDER BY `count` DESC LIMIT 5) AS part ORDER BY RANDOM();", wordBeforeId, wordId);
 
-            if (row != null)
+            if (row != null && row.Any())
             {
-                long id = (long)row["id"];
+                long id = (long)row[0]["id"];
                 return Get(id);
             }
 

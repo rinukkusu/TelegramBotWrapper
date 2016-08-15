@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace MarkovPlugin.Models
 {
     [BeanTable("word")]
-    class Word : EnhancedBean<Word>
+    public class Word : EnhancedBean<Word>
     {
         [BeanProperty("value")]
         public string Value { get; set; }

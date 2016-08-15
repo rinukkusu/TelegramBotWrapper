@@ -12,31 +12,21 @@ using TelegramBotWrapper.Commands;
 
 namespace MarkovPlugin
 {
-    [CommandInfo("m",
-        Description = "Markovgenerator",
-        Usage = "m <word>"
+    [CommandInfo("b",
+        Description = "Edle Bibelverse für Franz und Hans",
+        Usage = "b <word>"
     )]
-    public class MarkovCommand : CommandContainerBase
+    public class BibleCommand : CommandContainerBase
     {
         private readonly MarkovPartRepository _markovPartRepository;
         private readonly IBeanAPI _beanApi;
 
-        public MarkovCommand(TelegramBotClient bot) : base(bot)
+        public BibleCommand(TelegramBotClient bot) : base(bot)
         {
-            _beanApi = new BeanApi("data source=./markov.db", typeof(SqliteConnection));
+            _beanApi = new BeanApi("data source=./bibel.db", typeof(SqliteConnection));
             _beanApi.EnterFluidMode();
 
             _markovPartRepository = new MarkovPartRepository(_beanApi);
-
-            _bot.OnMessage += Bot_OnMessage;
-        }
-
-        private void Bot_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
-        {
-            if (e.Message.Text != null && !e.Message.Text.StartsWith("/"))
-            {
-                _markovPartRepository.AddSentence(e.Message.Text.ToLower());
-            }
         }
 
         public override bool Execute(Command command)
@@ -51,7 +41,7 @@ namespace MarkovPlugin
                 }
                 catch (Exception ex)
                 {
-                    returnText = "Laberts mal nicht ...";
+                    returnText = ex.Message;
                 }
             }
             else
@@ -61,7 +51,7 @@ namespace MarkovPlugin
 
             if (String.IsNullOrWhiteSpace(returnText))
             {
-                returnText = "Error: Couldn't find any words.";
+                returnText = "Fehler: Der Herr weiß dazu nichts zu berichten.";
             }
 
             _bot.SendTextMessageAsync(command.OriginalMessage.Chat.Id, returnText);
